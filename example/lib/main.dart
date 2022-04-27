@@ -37,6 +37,14 @@ class _MyAppState extends State<MyApp> {
       print("uptime : $uptime");
       String? serialNumber = await DeviceSpecialInfo.serialNumber;
       print("serialNumber $serialNumber");
+      String? imeiNumber = await DeviceSpecialInfo.imeiNumber;
+      print("imeiNumber $imeiNumber");
+
+      await DeviceSpecialInfo.getInstalledApps().then((value){
+        value.forEach((element) {
+          print("Name : ${element.name} -- Package Name : ${element.packageName}");
+        });
+      });
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

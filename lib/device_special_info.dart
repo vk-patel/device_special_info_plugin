@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'app_info.dart';
+
 class DeviceSpecialInfo {
   static const MethodChannel _channel = MethodChannel('device_special_info');
 
@@ -13,6 +15,27 @@ class DeviceSpecialInfo {
   static Future<String?> get serialNumber async {
     String result = await _channel.invokeMethod('getSerialNumber');
     return result;
+  }
+
+  static Future<String?> get imeiNumber async {
+    final String imei = await _channel.invokeMethod('getIMEI');
+    return imei;
+  }
+
+  static Future<List<AppInfo>> getInstalledApps([
+    bool excludeSystemApps = true,
+    String packageNamePrefix = "",
+  ]) async {
+    List<dynamic> apps = await _channel.invokeMethod(
+      'getInstalledApps',
+      {
+        "exclude_system_apps": excludeSystemApps,
+        "package_name_prefix": packageNamePrefix,
+      },
+    );
+    List<AppInfo> appInfoList = apps.map((app) => AppInfo.create(app)).toList();
+    appInfoList.sort((a, b) => a.name!.compareTo(b.name!));
+    return appInfoList;
   }
 
   static Future<String?> get bluetoothMacAddress async {

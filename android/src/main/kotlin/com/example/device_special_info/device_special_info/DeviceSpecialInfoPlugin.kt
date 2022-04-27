@@ -3,9 +3,16 @@ package com.example.device_special_info.device_special_info
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.P
 import android.os.SystemClock
 import android.provider.Settings
+import android.telephony.TelephonyManager
+import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -13,7 +20,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.lang.reflect.Field
-import kotlin.coroutines.coroutineContext
+import java.util.*
 
 
 /** DeviceSpecialInfoPlugin */
@@ -35,16 +42,28 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(this);
     }
 
-//    companion object {
-//        @JvmStatic
-//        fun registerWith(registrar: Registrar) {
-//            if (registrar.activity() == null) {
-//                return;
-//            }
-//            val channel = MethodChannel(registrar.messenger(), "device_special_info")
-//            channel.setMethodCallHandler(DeviceSpecialInfoPlugin())
-//        }
-//    }
+    companion object {
+        fun convertAppToMap(
+                packageManager: PackageManager,
+                app: ApplicationInfo,
+        ): HashMap<String, Any?> {
+            val map = HashMap<String, Any?>()
+            map["name"] = packageManager.getApplicationLabel(app)
+            map["package_name"] = app.packageName
+            /*map["icon"] =
+                    if (withIcon) drawableToByteArray(app.loadIcon(packageManager)) else ByteArray(0)*/
+            val packageInfo = packageManager.getPackageInfo(app.packageName, 0)
+            map["version_name"] = packageInfo.versionName
+            map["version_code"] = getVersionCode(packageInfo)
+            return map
+        }
+
+        @Suppress("DEPRECATION")
+        private fun getVersionCode(packageInfo: PackageInfo): Long {
+            return if (SDK_INT < P) packageInfo.versionCode.toLong()
+            else packageInfo.longVersionCode
+        }
+    }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "getPlatformVersion") {
@@ -65,6 +84,19 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             if (result != null) {
                 result.success(isRoaming)
             }
+        } else if (call.method == "getIMEI") {
+            val imeiNumber = getIMEI(applicationContext!!)
+            if (result != null) {
+                result.success(imeiNumber)
+            }
+        } else if (call.method == "getInstalledApps") {
+            val includeSystemApps = call.argument("exclude_system_apps") ?: true
+            val packageNamePrefix: String = call.argument("package_name_prefix") ?: ""
+            Thread {
+                val apps: List<Map<String, Any?>> =
+                        getInstalledApps(includeSystemApps, packageNamePrefix)
+                result.success(apps)
+            }.start()
         } else if (call.method == "getBluetoothMacAddress") {
             val bluetoothMac = getBluetoothMacAddress()
             if (result != null) {
@@ -94,6 +126,41 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             serialNumber = android.os.Build.SERIAL;
         }
         return serialNumber
+    }
+
+    @SuppressLint("HardwareIds", "LongLogTag")
+    private fun getIMEI(c: Context): String {
+        val telephonyManager: TelephonyManager
+        telephonyManager = c.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val deviceId: String
+        deviceId = if (telephonyManager.deviceId == null) {
+            "returned null"
+        } else {
+            telephonyManager.deviceId
+        }
+        return deviceId
+    }
+
+    private fun getInstalledApps(
+            excludeSystemApps: Boolean,
+            packageNamePrefix: String
+    ): List<Map<String, Any?>> {
+        val packageManager = applicationContext!!.packageManager
+        var installedApps = packageManager.getInstalledApplications(0)
+        if (excludeSystemApps)
+            installedApps =
+                    installedApps.filter { app -> !isSystemApp(packageManager, app.packageName) }
+        if (packageNamePrefix.isNotEmpty())
+            installedApps = installedApps.filter { app ->
+                app.packageName.startsWith(
+                        packageNamePrefix.lowercase(Locale.ENGLISH)
+                )
+            }
+        return installedApps.map { app -> convertAppToMap(packageManager, app) }
+    }
+
+    private fun isSystemApp(packageManager: PackageManager, packageName: String): Boolean {
+        return packageManager.getLaunchIntentForPackage(packageName) == null
     }
 
 

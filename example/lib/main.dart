@@ -35,6 +35,8 @@ class _MyAppState extends State<MyApp> {
 
       String? uptime  = await DeviceSpecialInfo.uptime;
       print("uptime : $uptime");
+      String? serialNumber = await DeviceSpecialInfo.serialNumber;
+      print("serialNumber $serialNumber");
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

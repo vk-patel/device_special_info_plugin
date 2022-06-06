@@ -1,3 +1,6 @@
+## 0.0.3
+* Get Device name.
+
 ## 0.0.2
 * TODO: Describe initial changes.
 

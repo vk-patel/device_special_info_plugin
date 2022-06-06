@@ -2,6 +2,7 @@ package com.example.device_special_info.device_special_info
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
@@ -104,6 +105,15 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             }
         } else if (call.method == "getUptime") {
             result?.let { getUptime(result) }
+        } else if (call.method == "deviceName") {
+            var deviceName = Settings.System.getString(applicationContext!!.contentResolver, "device_name")
+            Log.v("Device Name", "system device_name: " + deviceName);
+            result?.let { result.success(Settings.System.getString(applicationContext!!.contentResolver, "device_name")) }
+        } else if (call.method == "bluetoothName") {
+            val myDevice: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+            var deviceName = myDevice.getName()
+            Log.v("Bluetooth Name", "system device_name: " + deviceName);
+            result?.let { result.success(deviceName) }
         } else {
             result.notImplemented()
         }

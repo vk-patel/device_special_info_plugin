@@ -33,6 +33,9 @@ class _MyAppState extends State<MyApp> {
       platformVersion =
           await DeviceSpecialInfo.platformVersion ?? 'Unknown platform version';
 
+      String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
+      print("bluetoothName : $bluetoothName");
+
       String? uptime  = await DeviceSpecialInfo.uptime;
       print("uptime : $uptime");
       String? serialNumber = await DeviceSpecialInfo.serialNumber;

@@ -56,4 +56,14 @@ class DeviceSpecialInfo {
     var uptimeDuration = Duration(milliseconds: uptime);
     return uptimeDuration.toString();
   }
+
+  static Future<String?> get deviceName async {
+    final String? deviceName = await _channel.invokeMethod('deviceName');
+    return deviceName;
+  }
+
+  static Future<String?> get bluetoothName async {
+    final String? bluetoothName = await _channel.invokeMethod('bluetoothName');
+    return bluetoothName;
+  }
 }

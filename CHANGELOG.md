@@ -1,3 +1,6 @@
+## 0.0.5
+* Get Device name updated.
+
 ## 0.0.4
 * Get Device name updated.
 

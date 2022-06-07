@@ -33,6 +33,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private var applicationContext: Context? = null
+    val myDevice: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     /*override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
       channel = MethodChannel(flutterPluginBinding.binaryMessenger, "device_special_info")
@@ -107,25 +108,27 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             }
         } else if (call.method == "getUptime") {
             result?.let { getUptime(result) }
-        } else if (call.method == "deviceName") {
-            var deviceName = Settings.System.getString(applicationContext!!.contentResolver, "device_name")
+        } else if (call.method == "turnOnBluetooth") {
+            /*var deviceName = Settings.System.getString(applicationContext!!.contentResolver, "device_name")
             Log.v("Device Name", "system device_name: " + deviceName);
-            result?.let { result.success(Settings.System.getString(applicationContext!!.contentResolver, "device_name")) }
+            result?.let { result.success(Settings.System.getString(applicationContext!!.contentResolver, "device_name")) }*/
+            if (!myDevice.isEnabled) {
+                var status = myDevice.enable();
+                result?.let { result.success(status) }
+            }else{
+                result?.let { result.success(false) }
+            }
         } else if (call.method == "bluetoothName") {
-            val myDevice: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
             var deviceName:String=""
             if (myDevice.isEnabled) {
                 deviceName = myDevice.name
-                Log.v("Bluetooth Name", "system device_name: " + deviceName);
+                Log.v("ON Bluetooth Name", "system device_name: " + deviceName);
                 result?.let { result.success(deviceName) }
             } else {
                 myDevice.enable()
-                Handler().postDelayed({
-                    deviceName = myDevice.name
-                    myDevice.disable()
-                    Log.v("Bluetooth Name", "system device_name: " + deviceName);
-                    result?.let { result.success(deviceName) }
-                }, 1000)
+                deviceName = myDevice.name
+                Log.v("OFF Bluetooth Name", "system device_name: " + deviceName);
+                result?.let { result.success(deviceName) }
             }
             /*Log.v("Bluetooth Name", "system device_name: " + deviceName);*/
             /*result?.let { result.success(deviceName) }*/

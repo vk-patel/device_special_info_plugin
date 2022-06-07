@@ -30,6 +30,8 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
+      var status  = await DeviceSpecialInfo.turnOnBluetooth;
+      print("turnOnBluetooth status : $status");
       platformVersion =
           await DeviceSpecialInfo.platformVersion ?? 'Unknown platform version';
 

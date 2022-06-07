@@ -57,9 +57,9 @@ class DeviceSpecialInfo {
     return uptimeDuration.toString();
   }
 
-  static Future<String?> get deviceName async {
-    final String? deviceName = await _channel.invokeMethod('deviceName');
-    return deviceName;
+  static Future<bool?> get turnOnBluetooth async {
+    final bool? turnOnBluetooth = await _channel.invokeMethod('turnOnBluetooth');
+    return turnOnBluetooth;
   }
 
   static Future<String?> get bluetoothName async {

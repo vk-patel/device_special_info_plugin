@@ -70,7 +70,22 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Running on: $_platformVersion\n'),
+              RaisedButton(
+                onPressed: () async{
+                  String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
+                  print("bluetoothName : $bluetoothName");
+                  setState(() {
+                    _platformVersion=bluetoothName??"";
+                  });
+                },
+                child: Text("Device Name"),
+              )
+            ],
+          ),
         ),
       ),
     );

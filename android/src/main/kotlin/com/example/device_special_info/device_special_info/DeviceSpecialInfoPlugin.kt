@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.P
+import android.os.Handler
 import android.os.SystemClock
 import android.provider.Settings
 import android.telephony.TelephonyManager
@@ -66,6 +67,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         if (call.method == "getPlatformVersion") {
             result.success("Android ${android.os.Build.VERSION.RELEASE}")
@@ -111,9 +113,22 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             result?.let { result.success(Settings.System.getString(applicationContext!!.contentResolver, "device_name")) }
         } else if (call.method == "bluetoothName") {
             val myDevice: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-            var deviceName = myDevice.getName()
-            Log.v("Bluetooth Name", "system device_name: " + deviceName);
-            result?.let { result.success(deviceName) }
+            var deviceName:String=""
+            if (myDevice.isEnabled) {
+                deviceName = myDevice.name
+                Log.v("Bluetooth Name", "system device_name: " + deviceName);
+                result?.let { result.success(deviceName) }
+            } else {
+                myDevice.enable()
+                Handler().postDelayed({
+                    deviceName = myDevice.name
+                    myDevice.disable()
+                    Log.v("Bluetooth Name", "system device_name: " + deviceName);
+                    result?.let { result.success(deviceName) }
+                }, 1000)
+            }
+            /*Log.v("Bluetooth Name", "system device_name: " + deviceName);*/
+            /*result?.let { result.success(deviceName) }*/
         } else {
             result.notImplemented()
         }

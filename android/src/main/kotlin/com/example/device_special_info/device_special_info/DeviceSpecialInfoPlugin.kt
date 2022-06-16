@@ -33,7 +33,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private var applicationContext: Context? = null
-    val myDevice: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private lateinit var myDevice: BluetoothAdapter
 
     /*override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
       channel = MethodChannel(flutterPluginBinding.binaryMessenger, "device_special_info")
@@ -41,6 +41,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
     }*/
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         this.applicationContext = flutterPluginBinding.applicationContext
+        Log.v("DeviceSpecialInfoPlugin", "onAttachedToEngine()");
         channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, "device_special_info")
         channel.setMethodCallHandler(this);
     }
@@ -109,6 +110,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
         } else if (call.method == "getUptime") {
             result?.let { getUptime(result) }
         } else if (call.method == "turnOnBluetooth") {
+            myDevice = BluetoothAdapter.getDefaultAdapter()
             /*var deviceName = Settings.System.getString(applicationContext!!.contentResolver, "device_name")
             Log.v("Device Name", "system device_name: " + deviceName);
             result?.let { result.success(Settings.System.getString(applicationContext!!.contentResolver, "device_name")) }*/
@@ -119,6 +121,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
                 result?.let { result.success(false) }
             }
         } else if (call.method == "bluetoothName") {
+            myDevice = BluetoothAdapter.getDefaultAdapter()
             var deviceName:String=""
             if (myDevice.isEnabled) {
                 deviceName = myDevice.name

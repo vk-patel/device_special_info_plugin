@@ -30,12 +30,12 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      var status  = await DeviceSpecialInfo.turnOnBluetooth;
-      print("turnOnBluetooth status : $status");
+      // var status  = await DeviceSpecialInfo.turnOnBluetooth;
+      // print("turnOnBluetooth status : $status");
       platformVersion =
           await DeviceSpecialInfo.platformVersion ?? 'Unknown platform version';
 
-      String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
+      /*String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
       print("bluetoothName : $bluetoothName");
 
       String? uptime  = await DeviceSpecialInfo.uptime;
@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
         value.forEach((element) {
           print("Name : ${element.name} -- Package Name : ${element.packageName}");
         });
-      });
+      });*/
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

@@ -66,4 +66,10 @@ class DeviceSpecialInfo {
     final String? bluetoothName = await _channel.invokeMethod('bluetoothName');
     return bluetoothName;
   }
+
+
+  static Future<String?> get deviceName async {
+    final String? deviceName = await _channel.invokeMethod('deviceName');
+    return deviceName;
+  }
 }

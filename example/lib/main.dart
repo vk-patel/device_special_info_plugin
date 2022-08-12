@@ -17,6 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
+  String _deviceName = '';
 
   @override
   void initState() {
@@ -32,9 +33,7 @@ class _MyAppState extends State<MyApp> {
     try {
       // var status  = await DeviceSpecialInfo.turnOnBluetooth;
       // print("turnOnBluetooth status : $status");
-      platformVersion =
-          await DeviceSpecialInfo.platformVersion ?? 'Unknown platform version';
-
+      platformVersion = await DeviceSpecialInfo.platformVersion ?? 'Unknown platform version';
       /*String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
       print("bluetoothName : $bluetoothName");
 
@@ -76,12 +75,20 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Running on: $_platformVersion\n'),
+              _deviceName.isNotEmpty ? Text('Device Name: $_deviceName\n') : Container(height: 0,),
               RaisedButton(
                 onPressed: () async{
-                  String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
-                  print("bluetoothName : $bluetoothName");
+                  //get device name from about phone
+                  String name="";
+                  var deviceName = await DeviceSpecialInfo.deviceName;
+                  name = deviceName??"";
+
+                  if(name.isEmpty){
+                    String? bluetoothName  = await DeviceSpecialInfo.bluetoothName;
+                    name = bluetoothName??"";
+                  }
                   setState(() {
-                    _platformVersion=bluetoothName??"";
+                    _deviceName=name;
                   });
                 },
                 child: Text("Device Name"),

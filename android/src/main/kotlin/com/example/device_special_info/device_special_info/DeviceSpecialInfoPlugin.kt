@@ -135,7 +135,15 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             }
             /*Log.v("Bluetooth Name", "system device_name: " + deviceName);*/
             /*result?.let { result.success(deviceName) }*/
-        } else {
+        } else if (call.method == "deviceName") {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                Log.i("ITSM", "DEVICE NAME : ${Settings.Global.getString(applicationContext?.contentResolver, Settings.Global.DEVICE_NAME)}")
+                var name = Settings.Global.getString(applicationContext?.contentResolver, Settings.Global.DEVICE_NAME)
+                result?.let { result.success(name) }
+            } else {
+                result?.let { result.success("") }
+            }
+        }  else {
             result.notImplemented()
         }
     }

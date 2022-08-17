@@ -145,7 +145,7 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
                 result?.let { result.success("") }
             }
         } else if(call.method == "enrollmentSpecificId"){
-            val eId = call.argument("enterpriseID")
+            val eId = call.argument("enterpriseID") ?: ""
             if (Build.VERSION.SDK_INT >= 31) {
                 val manager = applicationContext?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
                 if(manager.isProfileOwnerApp(applicationContext?.packageName)){

@@ -1,6 +1,7 @@
 package com.example.device_special_info.device_special_info
 
 import android.annotation.SuppressLint
+import android.app.admin.DevicePolicyManager
 import android.bluetooth.BluetoothAdapter
 import android.content.ContentResolver
 import android.content.Context
@@ -143,7 +144,19 @@ class DeviceSpecialInfoPlugin : FlutterPlugin, MethodCallHandler {
             } else {
                 result?.let { result.success("") }
             }
-        }  else {
+        } else if(call.method == "enrollmentSpecificId"){
+            val eId = call.argument("enterpriseID")
+            if (Build.VERSION.SDK_INT >= 31) {
+                val manager = applicationContext?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                if(manager.isProfileOwnerApp(applicationContext?.packageName)){
+                    var enterpriseID = eId
+                    manager.setOrganizationId(enterpriseID)
+                    if (manager.enrollmentSpecificId.isNotEmpty()) {
+                        result?.success(manager.enrollmentSpecificId)
+                    } else result?.success("")
+                }else result?.success("")
+            }else result?.success("")
+        } else {
             result.notImplemented()
         }
     }

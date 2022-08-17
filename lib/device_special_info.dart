@@ -72,4 +72,16 @@ class DeviceSpecialInfo {
     final String? deviceName = await _channel.invokeMethod('deviceName');
     return deviceName;
   }
+
+  static Future<String> enrollmentSpecificId({
+    required String enterpriseID,
+  }) async {
+    final String? enrollmentSpecificId = await _channel.invokeMethod(
+      'enrollmentSpecificId',
+      {
+        "enterpriseID": enterpriseID,
+      },
+    );
+    return enrollmentSpecificId ?? "";
+  }
 }

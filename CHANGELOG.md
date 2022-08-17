@@ -1,3 +1,6 @@
+## 0.0.8
+* Fix Enrollment Specific Id For Android 12.
+
 ## 0.0.7
 * Bug Fixes.
 

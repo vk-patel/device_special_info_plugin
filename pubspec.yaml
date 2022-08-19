@@ -1,6 +1,6 @@
 name: device_special_info
 description: A flutter project for the Android device releated information which is necessary for most of the mobile projects targetting Android.
-version: 0.0.9
+version: 1.0.0
 homepage: https://github.com/vk-patel/device_special_info_plugin
 
 environment:
